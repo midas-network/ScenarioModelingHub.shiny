@@ -67,9 +67,10 @@ abstract_info <- function(r, model_name = "all") {
     "../visualization/data-visualization/model_abstracts/round", r)
   # get the files
   abstract_files = dir(path=abstract_path,pattern = "*.md")
+
   # get the models
   model_names = stringr::str_remove_all(
-    abstract_files, pattern = "(^\\d{4}-\\d{2}-\\d{2}-)|-Abstract.md")
+    abstract_files, pattern = "(^\\d{4}-\\d{2}-\\d{2}-)|-(A|a)bstract.md")
 
   if(model_name!="all") {
     # only return the abstract files with model_name included

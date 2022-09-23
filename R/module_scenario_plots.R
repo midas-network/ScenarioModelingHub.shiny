@@ -448,6 +448,12 @@ scenario_plots_server <- function(id, tab_data=NULL) {
 
       trend_model_name = reactive(input$trend_model_spec)
       trend_model_extent = reactive(input$trend_model_extent)
+
+      # if peak
+      if (isTRUE(round_info[rnd_num ==r, peak_mod])) {
+        peak_model_name = reactive(input$peak_model_spec)
+      }
+
       # wrap these in eventReactive
       trend_map_choices = eventReactive(input$trend_update_button,{
         list("name" = trend_model_name(),
@@ -594,21 +600,35 @@ scenario_plots_server <- function(id, tab_data=NULL) {
       # PROJECTION PEAKS
       # ########################################################
 
-      output$peak_plot <- renderPlotly({
+      if (isTRUE(round_info[rnd_num ==r, peak_mod])) {
+        output$peak_plot <- renderPlotly({
 
-        peak_data <- get_peak_period_data(rnd=r,
-                                          model_data = tab_data()$model_data)
+          peak_data <- get_peak_period_data(rnd=r,
+                                            model_data = tab_data()$peak_data)
 
-        if(!is.null(peak_data)) {
-          create_peak_plotly(
-            peak_data = peak_data,
-            scen_sel = ss(),
-            outcomes = ta_chk()
-            #make_plotly = F
-          )
-        }
-      }) %>% bindCache("peak", ss(), ta_chk(), id)
+          if(!is.null(peak_data)) {
+              create_peak_plotly(
+                peak_data = peak_data,
+                scen_sel = ss(),
+                model_sel = peak_model_name()
+              )
+          }
+        }) %>% bindCache("peak", ss(), id, peak_model_name())
+      } else {
+        output$peak_plot <- renderPlotly({
 
+          peak_data <- get_peak_period_data(rnd=r,
+                                            model_data = tab_data()$model_data)
+
+          if(!is.null(peak_data)) {
+              create_peak_plotly(
+                peak_data = peak_data,
+                scen_sel = ss(),
+                outcomes = ta_chk()
+              )
+            }
+        }) %>% bindCache("peak", ss(), ta_chk(), id)
+      }
     }
   )
 

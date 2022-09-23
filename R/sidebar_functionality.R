@@ -291,7 +291,8 @@ sidebar_for_model_distribution <- function(input, session, r, ...) {
 #' @noRd
 #' @export
 #'
-sidebar_for_peak_plot <- function(input, session,r,...) {
+sidebar_for_peak_plot <- function(input, session,r, model_names,
+                                  default_ensemble, ...) {
 
   #hide the radio button selector for scenario
   hide("scen_radio")
@@ -305,16 +306,26 @@ sidebar_for_peak_plot <- function(input, session,r,...) {
   purrr::walk(c("pi","location"), disable)
 
   # enable the rest
-  purrr::walk(c("scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4",
-                "target_chkboxes"), enable)
+  if (isFALSE(round_info[rnd_num == r, peak_mod])) {
+    purrr::walk(c("scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4",
+                  "target_chkboxes"), enable)
 
-  # Limit the outcome choices to Incident Only
-  updateCheckboxGroupInput(
-    session,
-    "target_chkboxes",
-    choiceNames = get_target_choiceNames("Incident"),
-    choiceValues = get_target_choiceValues("Incident"),
-    selected=get_target_choiceValues("Incident")[1]
-  )
-  show("target_chkboxes")
+    # Limit the outcome choices to Incident Only
+    updateCheckboxGroupInput(
+      session,
+      "target_chkboxes",
+      choiceNames = get_target_choiceNames("Incident"),
+      choiceValues = get_target_choiceValues("Incident"),
+      selected=get_target_choiceValues("Incident")[1]
+    )
+    show("target_chkboxes")
+  } else {
+    purrr::walk(c("scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4"), enable)
+    purrr::walk(c("target"), disable)
+
+    # update the dropdown
+    updateSelectizeInput(session, "peak_model_spec", choices=model_names,
+                         selected=default_ensemble)
+  }
+
 }

@@ -272,18 +272,40 @@ model_distribution_panel <- function(ns,r) {
 #' @importFrom plotly plotlyOutput
 #' @noRd
 #' @export
-peak_panel <- function(ns,r) {
+peak_panel <- function(ns,r, default_ensemble=default_ensemble) {
 
-  tabPanel(
-    "Projection Peaks",
-    br(),
-    shinycssloaders::withSpinner(
-      tagList(
-        plotlyOutput(outputId = ns("peak_plot"), height="100%")
-
+  if (isTRUE(round_info[rnd_num == r, peak_mod])) {
+    tabPanel(
+      "Projection Peaks",
+      br(),
+      fluidRow(
+        column(1),
+        column(
+          4,
+          selectInput(inputId = ns("peak_model_spec"), label="Model",
+                      choices=default_ensemble,
+                      selected = default_ensemble)
+        )
       ),
-      type = 8, color = "#211e6b", size = 1)
-  )
+      shinycssloaders::withSpinner(
+        tagList(
+          plotlyOutput(outputId = ns("peak_plot"), height="100%")
+
+        ),
+        type = 8, color = "#211e6b", size = 1)
+    )
+  } else {
+    tabPanel(
+      "Projection Peaks",
+      br(),
+      shinycssloaders::withSpinner(
+        tagList(
+          plotlyOutput(outputId = ns("peak_plot"), height="100%")
+
+        ),
+        type = 8, color = "#211e6b", size = 1)
+    )
+  }
 }
 
 
@@ -312,7 +334,7 @@ generate_tabsetPanel <- function(r, ns, default_ensemble) {
                                    default_ensemble=default_ensemble,r),
     "risk_map" = risk_maps_panel(ns=ns),
     "model_dist" = model_distribution_panel(ns=ns,r),
-    "peak_plot" = peak_panel(ns=ns,r)
+    "peak_plot" = peak_panel(ns=ns,r, default_ensemble=default_ensemble)
   )
 
   # customizations based on round

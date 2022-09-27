@@ -109,22 +109,23 @@ scen_comparison_panel <- function(ns,r) {
         column(
           8,
           radioButtons(inputId = ns("sc_selcomp"), label = "Comparison",
-                       choices = c("Compares (C) to (A) & Compares (D) to (B)", "Compares (B) to (A) & Compares (D) to (C)"),
+                       choices = c("Compares (C) to (A) & Compares (D) to (B)",
+                                   "Compares (B) to (A) & Compares (D) to (C)"),
                        selected = "Compares (C) to (A) & Compares (D) to (B)",
                        inline = T)
         )
       ),
       shinycssloaders::withSpinner(
-        plotlyOutput(outputId = ns("scen_comparison"),height = "100%", inline=FALSE),
-        type = 8, color = "#211e6b", size = 1)
+        plotlyOutput(outputId = ns("scen_comparison"),height = "100%",
+                     inline=FALSE), type = 8, color = "#211e6b", size = 1)
     )
   } else {
     tabPanel(
       "Scenario Comparison",
       br(),
       shinycssloaders::withSpinner(
-        plotlyOutput(outputId = ns("scen_comparison"),height = "100%", inline=FALSE),
-        type = 8, color = "#211e6b", size = 1)
+        plotlyOutput(outputId = ns("scen_comparison"),height = "100%",
+                     inline=FALSE), type = 8, color = "#211e6b", size = 1)
     )
 
   }
@@ -327,6 +328,29 @@ peak_panel <- function(ns,r, default_ensemble=default_ensemble) {
 
 
 ###########################################################
+#' This function generates the Peak Size Plot
+#'
+#' @importFrom shiny tabPanel br tagList
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom plotly plotlyOutput
+#' @noRd
+#' @export
+peak_size_panel <- function(ns) {
+
+  tabPanel(
+    "Peak Size",
+    br(),
+    shinycssloaders::withSpinner(
+      tagList(
+        plotlyOutput(outputId = ns("peak_size"), height="100%")
+
+      ),
+      type = 8, color = "#211e6b", size = 1)
+  )
+
+}
+
+###########################################################
 #' This function generates the overall tabSetPanel that holds
 #' the various plot-specific tabPanels, based on the round
 #' number.  This allows us to more easily generate as specific
@@ -351,7 +375,8 @@ generate_tabsetPanel <- function(r, ns, default_ensemble) {
                                    default_ensemble=default_ensemble,r),
     "risk_map" = risk_maps_panel(ns=ns),
     "model_dist" = model_distribution_panel(ns=ns,r),
-    "peak_plot" = peak_panel(ns=ns,r, default_ensemble=default_ensemble)
+    "peak_plot" = peak_panel(ns=ns,r, default_ensemble=default_ensemble),
+    "peak_size" = peak_size_panel(ns=ns)
   )
 
   # customizations based on round

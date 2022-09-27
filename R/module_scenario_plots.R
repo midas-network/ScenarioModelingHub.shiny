@@ -653,6 +653,28 @@ scenario_plots_server <- function(id, tab_data=NULL) {
             }
         }) %>% bindCache("peak", ss(), ta_chk(), id)
       }
+
+      # ########################################################
+      # PEAK SIZE
+      # ########################################################
+
+      output$peak_size <- renderPlotly({
+
+        peak_size_data <- tab_data()$peak_size
+
+        if(!is.null(peak_size_data)) {
+
+          peak_size_data <- get_peak_size_data(
+            rnd = r,  model_data = peak_size_data)
+
+          create_peak_size_plotly(
+            peak_size_data = peak_size_data,
+            scen_sel = ss(),
+            location = lo()
+          )
+        }
+      }) %>% bindCache("peak", ss(), lo(), id)
+
     }
   )
 

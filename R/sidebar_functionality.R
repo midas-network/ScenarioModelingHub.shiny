@@ -18,7 +18,8 @@ update_sidebar_inputs <- function(pt, model_names, default_ensemble, input,
     "Trend Maps" = sidebar_for_trend_maps,
     "Risk Maps" = sidebar_for_risk_maps,
     "Model Distribution" = sidebar_for_model_distribution,
-    "Projection Peaks" = sidebar_for_peak_plot
+    "Projection Peaks" = sidebar_for_peak_plot,
+    "Peak Size" = sidebar_for_peak_size_plot
   )
   if(pt %in% names(update_chooser)) {
     update_chooser[[pt]](input=input, session=session, model_names=model_names,
@@ -328,4 +329,29 @@ sidebar_for_peak_plot <- function(input, session,r, model_names,
                          selected=default_ensemble)
   }
 
+}
+
+#' @importFrom purrr walk map
+#' @noRd
+#' @export
+#'
+sidebar_for_peak_size_plot <- function(input, session,r, model_names,
+                                       default_ensemble, ...) {
+
+  #hide the radio button selector for scenario
+  hide("scen_radio")
+
+  #show the regular scenario selector
+  purrr::walk(c("scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4"), show)
+
+  # hide the target checkboxes and show the target radiobuttons instead
+  show("target")
+  hide("target_chkboxes")
+
+  # disable the target, prediction intervals
+  purrr::walk(c("target", "pi"), disable)
+
+  # enable the rest
+  purrr::walk(c("scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4", "location"),
+              enable)
 }

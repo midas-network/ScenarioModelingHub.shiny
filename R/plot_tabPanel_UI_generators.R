@@ -85,7 +85,7 @@ model_spec_panel <- function(ns, default_ensemble) {
 #' @export
 scen_comparison_panel <- function(ns,r) {
 
-  if(isTRUE(round_info[rnd_num ==r, specific_plot])) {
+  if (isTRUE(round_info[rnd_num ==r, specific_plot])) {
     tabPanel(
       "Scenario Comparison",
       br(),
@@ -95,6 +95,23 @@ scen_comparison_panel <- function(ns,r) {
           sliderInput(inputId = ns("sc_start_wk"),
                       label="Cumulative Starting From Projection Week: ",
                       min = 1,max=26,value=1,step = 1,width="100%",)
+        )
+      ),
+      shinycssloaders::withSpinner(
+        plotlyOutput(outputId = ns("scen_comparison"),height = "100%", inline=FALSE),
+        type = 8, color = "#211e6b", size = 1)
+    )
+  } else if (isTRUE(round_info[rnd_num ==r, multi_comp])) {
+    tabPanel(
+      "Scenario Comparison",
+      br(),
+      fluidRow(
+        column(
+          8,
+          radioButtons(inputId = ns("sc_selcomp"), label = "Comparison",
+                       choices = c("Compares (C) to (A) & Compares (D) to (B)", "Compares (B) to (A) & Compares (D) to (C)"),
+                       selected = "Compares (C) to (A) & Compares (D) to (B)",
+                       inline = T)
         )
       ),
       shinycssloaders::withSpinner(

@@ -454,6 +454,13 @@ scenario_plots_server <- function(id, tab_data=NULL) {
         peak_model_name = reactive(input$peak_model_spec)
       }
 
+      # if multi comparison
+      if (isTRUE(round_info[rnd_num ==r, multi_comp])) {
+        sc_selcomp = reactive(input$sc_selcomp)
+      } else {
+        sc_selcomp = reactive(NULL)
+      }
+
       # wrap these in eventReactive
       trend_map_choices = eventReactive(input$trend_update_button,{
         list("name" = trend_model_name(),
@@ -494,15 +501,32 @@ scenario_plots_server <- function(id, tab_data=NULL) {
             create_scenario_comparison_plotly(
               scen_comp_data[week==sc_start_wk()-1], loc_name = lo())
           } else {
-            if (isTRUE(unique(round_info[rnd_num == r, zeroed]))) {
-              create_scenario_comparison_plotly(scen_comp_data[week==0],
-                                                loc_name = lo())
-            } else {
-              create_scenario_comparison_plotly(scen_comp_data, loc_name = lo())
+            if (isTRUE(round_info[rnd_num ==r, multi_comp])) {
+              sel_comp <- unlist(strsplit(sc_selcomp(), " & "))[1]
+              sel_comp <- gsub("\\(", "\\\\(", sel_comp) %>%
+                gsub("\\)", "\\\\)", .)
+              scen_comp_data <- scen_comp_data[unlist(purrr::map(
+                scen_comp_data, function(x) any(grepl(sel_comp, unique(
+                  unlist(x[,"comparison"]))))))][[1]]
+              if (isTRUE(unique(round_info[rnd_num == r, zeroed]))) {
+                create_scenario_comparison_plotly(scen_comp_data[week==0],
+                                                  loc_name = lo())
+              } else {
+                create_scenario_comparison_plotly(scen_comp_data,
+                                                  loc_name = lo())
               }
+            } else {
+              if (isTRUE(unique(round_info[rnd_num == r, zeroed]))) {
+                create_scenario_comparison_plotly(scen_comp_data[week==0],
+                                                  loc_name = lo())
+              } else {
+                create_scenario_comparison_plotly(scen_comp_data,
+                                                  loc_name = lo())
+              }
+            }
           }
         }
-      }) %>% bindCache("comp", sc_start_wk(), lo(),id)
+      }) %>% bindCache("comp", sc_start_wk(), lo(),sc_selcomp(), id)
 
       # ########################################################
       # STATE DEVIATION

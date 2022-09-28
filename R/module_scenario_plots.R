@@ -665,7 +665,8 @@ scenario_plots_server <- function(id, tab_data=NULL) {
         if(!is.null(peak_size_data)) {
 
           peak_size_data <- get_peak_size_data(
-            rnd = r,  model_data = peak_size_data)
+            rnd = r,  model_data = peak_size_dat,
+            ensemble = def_ens)
 
           create_peak_size_plotly(
             peak_size_data = peak_size_data,

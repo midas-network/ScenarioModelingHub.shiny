@@ -97,6 +97,7 @@ target_radiobutton_UI <- function(id) {
 #' @export
 #'
 target_checkbox_UI <- function(id) {
+
   checkboxGroupInput(
     inputId = id,
     label = HTML('<h4 style="color:#606060"><strong>Target:</strong></h4>
@@ -265,16 +266,37 @@ get_definitions <- function(rnd_num) {
   defs <- function(rnd) {
     definition_list[[unlist(unique(round_info[rnd_num == rnd, "definition"]))]]
   }
-  base_image <- function(rnd_num) {
+  base_image <- function(link_image) {
     includeHTML(link_image)
   }
-  link_image <- paste0("../code/www/round", rnd_num, ".html")
-  if (file.exists(link_image)) {
-    this_row <- fluidRow(
-      column(3, defs(rnd_num)),
-      column(9, base_image(rnd_num)),
-      br()
-    )
+  link_image <- dir("../code/www/", paste0("round", rnd_num,"(_.+)?\\.html"),
+                    full.names = TRUE)
+  #link_image <- paste0("../code/www/round", rnd_num, ".html")
+  if (all(file.exists(link_image))) {
+    if (length(link_image == 2)) {
+      this_row <- fluidRow(
+        column(3, defs(rnd_num)),
+        column(9,
+               tabsetPanel(
+                 id = "pat_tab",
+                 tabPanel(
+                   paste0(getOption("pathogen"), "- Scenario"),
+                   base_image(grep("_", link_image, invert = TRUE,
+                                   value = TRUE))),
+                 tabPanel(
+                   paste0(str_extract(grep("_", link_image, value = TRUE),
+                                      "(?<=_).*(?=.html)"), "- Scenario"),
+                   base_image(grep("_", link_image, value = TRUE)))
+               )),
+        br()
+      )
+    } else {
+      this_row <- fluidRow(
+        column(3, defs(rnd_num)),
+        column(9, base_image(link_image)),
+        br()
+      )
+    }
   } else {
     this_row <- fluidRow(
       column(12, defs(rnd_num)),

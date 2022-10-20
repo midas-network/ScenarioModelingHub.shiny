@@ -243,8 +243,13 @@ round_scenario_plots_row_UI <- function(id) {
            ),
         # This next column is all the individual plot tabs for this round
         if (unlist(unique(round_info[rnd_num == r, "print_rnd"])) == "TRUE") {
-          column(8,generate_tabsetPanel(r,ns,default_ensemble,
-                                        multipat_disclaimer))
+          if (exists("multipat_disclaimer")) {
+            disclaimer <- multipat_disclaimer
+          } else {
+            disclaimer <- NULL
+          }
+          print(disclaimer)
+          column(8,generate_tabsetPanel(r,ns,default_ensemble, disclaimer))
         } else {
           column(8, HTML(unlist(unique(round_info[rnd_num == r, "print_rnd"]))))
         }

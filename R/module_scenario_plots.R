@@ -248,15 +248,13 @@ round_scenario_plots_row_UI <- function(id) {
           } else {
             disclaimer <- NULL
           }
-          print(disclaimer)
           column(8,generate_tabsetPanel(r,ns,default_ensemble, disclaimer))
         } else {
           column(8, HTML(unlist(unique(round_info[rnd_num == r, "print_rnd"]))))
         }
       ),
       hr(style = "border:1px solid ; border-color: #bfbfbf;"),
-      round_summary_notes(r)
-
+      round_summary_notes(ns, r)
   )
 
 }
@@ -267,39 +265,38 @@ round_scenario_plots_row_UI <- function(id) {
 #' @importFrom shiny includeHTML column
 #' @noRd
 #' @export
-get_definitions <- function(rnd_num) {
+get_definitions <- function(ns, rnd_num) {
 
   defs <- function(rnd) {
     definition_list[[unlist(unique(round_info[rnd_num == rnd, "definition"]))]]
   }
-  base_image <- function(link_image) {
-    includeHTML(link_image)
-  }
   link_image <- dir("../code/www/", paste0("round", rnd_num,"(_.+)?\\.html"),
                     full.names = TRUE)
-  #link_image <- paste0("../code/www/round", rnd_num, ".html")
   if (all(file.exists(link_image))) {
     if (length(link_image) == 2) {
+
+      multipat_tabpanel <- function(ns,rnd_num) {
+        pat_tab <-
+          list(tabPanel(
+            paste0(getOption("pathogen"), " - Scenario"),
+            includeHTML(grep("_", link_image, invert = TRUE,
+                            value = TRUE))))
+        # add id and selected
+        pat_tab$id = ns("pat_tab")
+        pat_tab$selected=paste0(getOption("pathogen"), " - Scenario")
+        do.call(tabsetPanel, pat_tab)
+      }
+
       this_row <- fluidRow(
         column(3, defs(rnd_num)),
-        column(9,
-               tabsetPanel(
-                 id = "pat_tab",
-                 tabPanel(
-                   paste0(getOption("pathogen"), " - Scenario"),
-                   base_image(grep("_", link_image, invert = TRUE,
-                                   value = TRUE))),
-                 tabPanel(
-                   paste0(str_extract(grep("_", link_image, value = TRUE),
-                                      "(?<=_).*(?=.html)"), " - Scenario"),
-                   base_image(grep("_", link_image, value = TRUE)))
-               )),
+        column(9, multipat_tabpanel(ns, rnd_num)),
         br()
       )
+
     } else {
       this_row <- fluidRow(
         column(3, defs(rnd_num)),
-        column(9, base_image(link_image)),
+        column(9, includeHTML(link_image)),
         br()
       )
     }
@@ -342,9 +339,9 @@ get_notes <- function(rnd_num) {
 #'
 #' @noRd
 #' @export
-round_summary_notes <- function(rnd_num) {
+round_summary_notes <- function(ns, rnd_num) {
 
-  defs = get_definitions(rnd_num)
+  defs = get_definitions(ns, rnd_num)
   notes = get_notes(rnd_num)
 
   return(list("defs"=defs, "notes"=notes))
@@ -398,8 +395,29 @@ scenario_plots_server <- function(id, tab_data=NULL) {
             updateCheckboxInput(session, "ensemble_chkbox_spec", value = FALSE)
             updateCheckboxInput(session, "ensemble_chkbox_trend", value = FALSE)
           }
+          if (current_plot_tab() == "MultiPathogen Plot") {
+            appendTab("pat_tab",
+                      tabPanel(paste0(
+                        str_extract(grep("_",
+                                         dir("../code/www/",
+                                             paste0("round", r,"(_.+)?\\.html"),
+                                             full.names = TRUE), value = TRUE),
+                                    "(?<=_).*(?=.html)"), " - Scenario"),
+                        includeHTML(grep("_",
+                                        dir("../code/www/",
+                                            paste0("round", r,"(_.+)?\\.html"),
+                                            full.names = TRUE), value = TRUE)))
+
+                      )
+          } else {
+            removeTab("pat_tab", paste0(
+              str_extract(grep("_", dir("../code/www/",
+                                        paste0("round", r,"(_.+)?\\.html"),
+                                        full.names = TRUE), value = TRUE),
+                          "(?<=_).*(?=.html)"), " - Scenario"))
+          }
           # update multi-pathogen plot, if necessary
-          if (isTRUE(unlist(round_info[rnd_num == 1, "multipat_plot"]))) {
+          if (isTRUE(unlist(round_info[rnd_num == r, "multipat_plot"]))) {
             updateRadioButtons(
               session, "other_scen",
               label = paste(str_to_title(unique(

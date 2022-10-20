@@ -373,19 +373,12 @@ sidebar_for_multidisease_plot  <- function(input, session,r, ...) {
   purrr::walk(c("pi"), #"scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4"),
               disable)
 
-  # Limit the outcome choices to Incident Only
-  if (r>13) {
-    sel <- grep("Hospitalization", get_target_choiceValues("Incident"),
-                value = TRUE)[1]
-  } else {
-    sel <- grep("Cases", get_target_choiceValues("Incident"),
-                value = TRUE)[1]
-  }
+
   updateRadioButtons(
     session, "target",
     choiceNames = get_target_choiceNames("Incident"),
     choiceValues = get_target_choiceValues("Incident"),
-    selected = sel
+    selected =  get_target_choiceValues("Incident")[1]
   )
   purrr::walk(c("target", "location"), enable)
 

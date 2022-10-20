@@ -19,7 +19,8 @@ update_sidebar_inputs <- function(pt, model_names, default_ensemble, input,
     "Risk Maps" = sidebar_for_risk_maps,
     "Model Distribution" = sidebar_for_model_distribution,
     "Projection Peaks" = sidebar_for_peak_plot,
-    "Peak Size" = sidebar_for_peak_size_plot
+    "Peak Size" = sidebar_for_peak_size_plot,
+    "MultiPathogen Plot" = sidebar_for_multidisease_plot
   )
   if(pt %in% names(update_chooser)) {
     update_chooser[[pt]](input=input, session=session, model_names=model_names,
@@ -354,4 +355,38 @@ sidebar_for_peak_size_plot <- function(input, session,r, model_names,
   # enable the rest
   purrr::walk(c("scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4", "location"),
               enable)
+}
+
+sidebar_for_multidisease_plot  <- function(input, session,r, ...) {
+
+  #hide the radio button selector for scenario
+  hide("scen_radio")
+  #hide the regular scenario selector
+  # purrr::walk(c("scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4"), hide)
+
+  hide("multidesc")
+
+  # hide the target checkboxes and show the target radiobuttons instead
+  show("target")
+  hide("target_chkboxes")
+
+  purrr::walk(c("pi"), #"scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4"),
+              disable)
+
+  # Limit the outcome choices to Incident Only
+  if (r>13) {
+    sel <- grep("Hospitalization", get_target_choiceValues("Incident"),
+                value = TRUE)[1]
+  } else {
+    sel <- grep("Cases", get_target_choiceValues("Incident"),
+                value = TRUE)[1]
+  }
+  updateRadioButtons(
+    session, "target",
+    choiceNames = get_target_choiceNames("Incident"),
+    choiceValues = get_target_choiceValues("Incident"),
+    selected = sel
+  )
+  purrr::walk(c("target", "location"), enable)
+
 }

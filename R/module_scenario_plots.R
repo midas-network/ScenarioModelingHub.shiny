@@ -243,7 +243,8 @@ round_scenario_plots_row_UI <- function(id) {
            ),
         # This next column is all the individual plot tabs for this round
         if (unlist(unique(round_info[rnd_num == r, "print_rnd"])) == "TRUE") {
-          column(8,generate_tabsetPanel(r,ns,default_ensemble))
+          column(8,generate_tabsetPanel(r,ns,default_ensemble,
+                                        multipat_disclaimer))
         } else {
           column(8, HTML(unlist(unique(round_info[rnd_num == r, "print_rnd"]))))
         }
@@ -392,6 +393,26 @@ scenario_plots_server <- function(id, tab_data=NULL) {
             updateCheckboxInput(session, "ensemble_chkbox_spec", value = FALSE)
             updateCheckboxInput(session, "ensemble_chkbox_trend", value = FALSE)
           }
+          # update multi-pathogen plot, if necessary
+          if (isTRUE(unlist(round_info[rnd_num == 1, "multipat_plot"]))) {
+            updateRadioButtons(
+              session, "other_scen",
+              label = paste(str_to_title(unique(
+                tab_data()$multi_data$other$pathogen)), "Round",
+                unique(str_extract(other_round[unique(
+                  tab_data()$multi_data$other$scenario_id)], "[[:digit:]]+")),
+                'Scenario Selection'),
+              choiceValues = unique(tab_data()$multi_data$other$scenario_id),
+              choiceNames = paste(other_info[unique(
+                tab_data()$multi_data$other$scenario_id)], " (", unique(
+                  tab_data()$multi_data$other$scenario_id), ")", sep = ""),
+              selected = unique(tab_data()$multi_data$other$scenario_id)[1],
+              inline = FALSE)
+            updateSelectInput(
+              session, "other_quant",
+              label = paste(str_to_title(unique(
+                tab_data()$multi_data$other$pathogen)), 'Quantile'))
+          }
           # update the dropdown for Trend map
           updateSelectizeInput(session, "trend_model_spec",
                                choices=grep(ens_exc, unique(
@@ -481,6 +502,13 @@ scenario_plots_server <- function(id, tab_data=NULL) {
         sc_selcomp = reactive(input$sc_selcomp)
       } else {
         sc_selcomp = reactive(NULL)
+      }
+
+      # if multi-pathogen plot
+      if (isTRUE(unlist(round_info[rnd_num == 1, "multipat_plot"]))) {
+        ss2 <- reactive(input$other_scen)
+        pi1 <- reactive(input$model_quant)
+        pi2 <- reactive(input$other_quant)
       }
 
       # wrap these in eventReactive
@@ -697,6 +725,22 @@ scenario_plots_server <- function(id, tab_data=NULL) {
           )
         }
       }) %>% bindCache("peak", ss(), lo(), id)
+
+      #' ########################################################
+      #' MULTIDISEASE PLOTS
+      #' ########################################################
+
+      output$multipat_plot <- renderPlotly({
+
+        if(!is.null(tab_data()$multi_data)) {
+          create_multipat_plotly(tab_data()$multi_data, location = lo(),
+                                 scen_sel = ss(), target = ta(),
+                                 scen_sel2 = ss2(), pi1 = pi1(), pi2 = pi2(),
+                                 rd_num =r
+          )
+        }
+      }) %>% bindCache("multipat", lo(), ss(), ss2(), ta(), pi1(),
+                       pi2(), id)
 
     }
   )

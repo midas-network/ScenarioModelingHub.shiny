@@ -351,6 +351,48 @@ peak_size_panel <- function(ns) {
 }
 
 ###########################################################
+#This function generates the Multi pathogem Plot
+###########################################################
+multipat_panel <- function(ns,r, disclaimer = NULL) {
+
+  tabPanel(
+    "MultiPathogen Plot",
+    br(),
+    fluidRow(
+      column(
+        3,
+        selectInput(inputId = ns("model_quant"),
+                    label = paste(getOption("pathogen"), "Quantile"),
+                    choices = c(0.05, 0.25, 0.5, 0.75, 0.95),
+                    selected = 0.5)
+      ),
+      column(1),
+      column(
+        5,
+        radioButtons(
+          inputId = ns("other_scen"), label = "",
+          choices=c("A", "B", "C", "D"), inline = TRUE)
+      ),
+      column(
+        3,
+        selectInput(inputId = ns("other_quant"),
+                    label = paste("quantile"),
+                    choices = c(0.05, 0.25, 0.5, 0.75, 0.95),
+                    selected = 0.5)
+      )
+    ),
+    shinycssloaders::withSpinner(
+      tagList(
+        HTML(disclaimer),
+        plotlyOutput(outputId = ns("multipat_plot"), height = "100%")
+      ),
+      type = 8, color = "#211e6b", size = 1)
+  )
+}
+
+
+
+###########################################################
 #' This function generates the overall tabSetPanel that holds
 #' the various plot-specific tabPanels, based on the round
 #' number.  This allows us to more easily generate as specific
@@ -363,7 +405,7 @@ peak_size_panel <- function(ns) {
 #' @importFrom purrr discard
 #' @noRd
 #' @export
-generate_tabsetPanel <- function(r, ns, default_ensemble) {
+generate_tabsetPanel <- function(r, ns, default_ensemble, disclaimer = NULL) {
 
   plotPanels <-list(
     "scen_plot" = scen_plot_panel(ns = ns),
@@ -376,7 +418,8 @@ generate_tabsetPanel <- function(r, ns, default_ensemble) {
     "risk_map" = risk_maps_panel(ns=ns),
     "model_dist" = model_distribution_panel(ns=ns,r),
     "peak_plot" = peak_panel(ns=ns,r, default_ensemble=default_ensemble),
-    "peak_size" = peak_size_panel(ns=ns)
+    "peak_size" = peak_size_panel(ns=ns),
+    "multipat_plot" = multipat_panel(ns=ns, r, disclaimer)
   )
 
   # customizations based on round

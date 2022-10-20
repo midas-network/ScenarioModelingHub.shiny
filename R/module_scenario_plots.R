@@ -281,12 +281,12 @@ get_definitions <- function(rnd_num) {
                tabsetPanel(
                  id = "pat_tab",
                  tabPanel(
-                   paste0(getOption("pathogen"), "- Scenario"),
+                   paste0(getOption("pathogen"), " - Scenario"),
                    base_image(grep("_", link_image, invert = TRUE,
                                    value = TRUE))),
                  tabPanel(
                    paste0(str_extract(grep("_", link_image, value = TRUE),
-                                      "(?<=_).*(?=.html)"), "- Scenario"),
+                                      "(?<=_).*(?=.html)"), " - Scenario"),
                    base_image(grep("_", link_image, value = TRUE)))
                )),
         br()

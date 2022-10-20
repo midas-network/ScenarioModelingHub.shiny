@@ -528,7 +528,7 @@ scenario_plots_server <- function(id, tab_data=NULL) {
       }
 
       # if multi-pathogen plot
-      if (isTRUE(unlist(round_info[rnd_num == 1, "multipat_plot"]))) {
+      if (isTRUE(unlist(round_info[rnd_num == r, "multipat_plot"]))) {
         ss2 <- reactive(input$other_scen)
         pi1 <- reactive(input$model_quant)
         pi2 <- reactive(input$other_quant)

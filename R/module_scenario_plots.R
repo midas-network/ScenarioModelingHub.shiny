@@ -274,7 +274,7 @@ get_definitions <- function(rnd_num) {
                     full.names = TRUE)
   #link_image <- paste0("../code/www/round", rnd_num, ".html")
   if (all(file.exists(link_image))) {
-    if (length(link_image == 2)) {
+    if (length(link_image) == 2) {
       this_row <- fluidRow(
         column(3, defs(rnd_num)),
         column(9,

@@ -429,7 +429,7 @@ scenario_plots_server <- function(id, tab_data=NULL) {
               choiceNames = paste(other_info[unique(
                 tab_data()$multi_data$other$scenario_id)], " (", unique(
                   tab_data()$multi_data$other$scenario_id), ")", sep = ""),
-              selected = unique(tab_data()$multi_data$other$scenario_id)[1],
+              selected = grep(round_info[rnd_num == r, def_multipat_sel], unique(tab_data()$multi_data$other$scenario_id), value = TRUE),
               inline = FALSE)
             updateSelectInput(
               session, "other_quant",

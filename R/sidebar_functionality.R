@@ -59,9 +59,12 @@ sidebar_for_scenario_plot <- function(input, session,r,...) {
 
 
   # Since target is enabled, make sure all choices are there
+  sel <- grep(round_info[rnd_num == r, def_target], get_target_choiceValues(),
+              value = TRUE)
   updateRadioButtons(
     session, "target",choiceNames = get_target_choiceNames(),
-    choiceValues = get_target_choiceValues()
+    choiceValues = get_target_choiceValues(),
+    selected = sel[1]
   )
 
   # Hide additional ensemble checkbox for rounds before round 5
@@ -161,7 +164,7 @@ sidebar_for_scenario_comparison <- function(input, session,...) {
 #' @noRd
 #' @export
 #'
-sidebar_for_state_deviation <- function(input, session,...) {
+sidebar_for_state_deviation <- function(input, session, r, ...) {
 
   #hide the radio button selector for scenario
   show("scen_radio")
@@ -179,10 +182,13 @@ sidebar_for_state_deviation <- function(input, session,...) {
                 "target"), enable)
 
   # Limit the outcome choices to Incident only
+  sel <- grep(round_info[rnd_num == r, def_target],
+              get_target_choiceValues("Incident"), value = TRUE)
   updateRadioButtons(
     session, "target",
     choiceNames = get_target_choiceNames("Incident"),
-    choiceValues = get_target_choiceValues("Incident")
+    choiceValues = get_target_choiceValues("Incident"),
+    selected = sel[1]
   )
 }
 
@@ -215,10 +221,13 @@ sidebar_for_trend_maps <- function(input, session,model_names,
               enable)
 
   # Limit the outcome choices to Incident only
+  sel <- grep(round_info[rnd_num == r, def_target],
+              get_target_choiceValues("Incident"), value = TRUE)
   updateRadioButtons(
     session, "target",
     choiceNames = get_target_choiceNames("Incident"),
-    choiceValues = get_target_choiceValues("Incident")
+    choiceValues = get_target_choiceValues("Incident"),
+    selected = sel[1]
   )
 
   # update the dropdown
@@ -232,7 +241,7 @@ sidebar_for_trend_maps <- function(input, session,model_names,
 #' @noRd
 #' @export
 #'
-sidebar_for_risk_maps <- function(input, session,...) {
+sidebar_for_risk_maps <- function(input, session, r, ...) {
 
   #show the radio button selector for scenario
   show("scen_radio")
@@ -250,10 +259,13 @@ sidebar_for_risk_maps <- function(input, session,...) {
               enable)
 
   # Limit the outcome choices to Cumulative only
+  sel <- grep(round_info[rnd_num == r, def_target],
+              get_target_choiceValues("Cumulative"), value = TRUE)
   updateRadioButtons(
     session, "target",
     choiceNames = get_target_choiceNames("Cumulative"),
-    choiceValues = get_target_choiceValues("Cumulative")
+    choiceValues = get_target_choiceValues("Cumulative"),
+    selected = sel[1]
   )
 }
 
@@ -293,7 +305,7 @@ sidebar_for_model_distribution <- function(input, session, r, ...) {
 #' @noRd
 #' @export
 #'
-sidebar_for_peak_plot <- function(input, session,r, model_names,
+sidebar_for_peak_plot <- function(input, session, r, model_names,
                                   default_ensemble, ...) {
 
   #hide the radio button selector for scenario
@@ -313,12 +325,14 @@ sidebar_for_peak_plot <- function(input, session,r, model_names,
                   "target_chkboxes"), enable)
 
     # Limit the outcome choices to Incident Only
+    sel <- grep(round_info[rnd_num == r, def_target],
+                get_target_choiceValues("Incident"), value = TRUE)
     updateCheckboxGroupInput(
       session,
       "target_chkboxes",
       choiceNames = get_target_choiceNames("Incident"),
       choiceValues = get_target_choiceValues("Incident"),
-      selected=get_target_choiceValues("Incident")[1]
+      selected=sel[1]
     )
     show("target_chkboxes")
   } else {
@@ -373,12 +387,13 @@ sidebar_for_multidisease_plot  <- function(input, session,r, ...) {
   purrr::walk(c("pi"), #"scen_sel1", "scen_sel2", "scen_sel3", "scen_sel4"),
               disable)
 
-
+  sel <- grep(round_info[rnd_num == r, def_target],
+              get_target_choiceValues("Incident"), value = TRUE)
   updateRadioButtons(
     session, "target",
     choiceNames = get_target_choiceNames("Incident"),
     choiceValues = get_target_choiceValues("Incident"),
-    selected =  get_target_choiceValues("Incident")[1]
+    selected =  sel[1]
   )
   purrr::walk(c("target", "location"), enable)
 

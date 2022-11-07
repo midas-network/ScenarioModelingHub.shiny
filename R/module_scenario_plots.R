@@ -76,14 +76,19 @@ scen_radiobutton_UI <- function(id, r) {
 #' @noRd
 #' @export
 #'
-target_radiobutton_UI <- function(id) {
+target_radiobutton_UI <- function(id, r) {
+
+  sel <- grep(round_info[rnd_num == r, def_target], get_target_choiceValues(),
+              value = TRUE)
+
   radioButtons(
     inputId = id,
     label = HTML('<h4 style="color:#606060"><strong>Target:</strong></h4>
                  <h5 style="color:#606060">
                  Each model projects different targets</h5>'),
     choiceNames = get_target_choiceNames(),
-    choiceValues = get_target_choiceValues()
+    choiceValues = get_target_choiceValues(),
+    selected = sel[1]
   )
 }
 
@@ -96,7 +101,10 @@ target_radiobutton_UI <- function(id) {
 #' @noRd
 #' @export
 #'
-target_checkbox_UI <- function(id) {
+target_checkbox_UI <- function(id, r) {
+
+  sel <- grep(round_info[rnd_num == r, def_target], get_target_choiceValues(),
+              value = TRUE)
 
   checkboxGroupInput(
     inputId = id,
@@ -105,7 +113,7 @@ target_checkbox_UI <- function(id) {
                  Each model projects different targets</h5>'),
     choiceNames = get_target_choiceNames(),
     choiceValues = get_target_choiceValues(),
-    selected = get_target_choiceValues()[1]
+    selected = sel[1]
   )
 }
 
@@ -222,8 +230,8 @@ round_scenario_plots_row_UI <- function(id) {
                          (American Samoa, Guam, Northern Marianas Island,
                          Virgin Islands) not included</div>')),
            # Add target radiobuttons and checkbox group (originally hidden)
-           target_radiobutton_UI(id = ns("target")),
-           hidden(target_checkbox_UI(id=ns("target_chkboxes"))),
+           target_radiobutton_UI(id = ns("target"), r = r),
+           hidden(target_checkbox_UI(id=ns("target_chkboxes"), r = r)),
            # Add uncertainty interval radio buttons
            radioButtons(ns("pi"), label = h4(strong("Uncertainty Interval:"),
                                              style = "color:#606060"),
@@ -430,7 +438,9 @@ scenario_plots_server <- function(id, tab_data=NULL) {
               choiceNames = paste(other_info[unique(
                 tab_data()$multi_data$other$scenario_id)], " (", unique(
                   tab_data()$multi_data$other$scenario_id), ")", sep = ""),
-              selected = grep(round_info[rnd_num == r, def_multipat_sel], unique(tab_data()$multi_data$other$scenario_id), value = TRUE),
+              selected = grep(round_info[rnd_num == r, def_multipat_sel],
+                              unique(tab_data()$multi_data$other$scenario_id),
+                              value = TRUE),
               inline = FALSE)
             updateSelectInput(
               session, "other_quant",

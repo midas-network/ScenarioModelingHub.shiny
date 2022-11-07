@@ -98,7 +98,8 @@ scen_comparison_panel <- function(ns,r) {
         )
       ),
       shinycssloaders::withSpinner(
-        plotlyOutput(outputId = ns("scen_comparison"),height = "100%", inline=FALSE),
+        plotlyOutput(outputId = ns("scen_comparison"),height = "100%",
+                     inline=FALSE),
         type = 8, color = "#211e6b", size = 1)
     )
   } else if (isTRUE(round_info[rnd_num ==r, multi_comp])) {

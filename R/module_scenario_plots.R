@@ -272,7 +272,7 @@ get_definitions <- function(ns, rnd_num) {
   }
   link_image <- dir("../code/www/", paste0("round", rnd_num,"(_.+)?\\.html"),
                     full.names = TRUE)
-  if (all(file.exists(link_image))) {
+  if (all(file.exists(link_image)) & length(link_image) > 0) {
     if (length(link_image) == 2) {
 
       multipat_tabpanel <- function(ns,rnd_num) {
@@ -417,7 +417,8 @@ scenario_plots_server <- function(id, tab_data=NULL) {
                           "(?<=_).*(?=.html)"), " - Scenario"))
           }
           # update multi-pathogen plot, if necessary
-          if (isTRUE(unlist(round_info[rnd_num == r, "multipat_plot"]))) {
+          if (isTRUE(unlist(round_info[rnd_num == r, "multipat_plot"])) &
+              !is.null(tab_data()$multi_data)) {
             updateRadioButtons(
               session, "other_scen",
               label = paste(str_to_title(unique(

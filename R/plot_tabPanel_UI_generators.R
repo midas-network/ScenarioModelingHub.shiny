@@ -340,6 +340,19 @@ peak_size_panel <- function(ns) {
   tabPanel(
     "Peak Size",
     br(),
+    fluidRow(
+      column(1),
+      column(
+        4,
+        checkboxInput(
+          inputId = ns("ensemble_chkbox_peak"),
+          label = list(HTML('<div style="font-size:14px;color:#606060;">
+                            Show Additional Ensemble</div>')),
+          value = FALSE,
+          width = "100%"
+        )
+      )
+    ),
     shinycssloaders::withSpinner(
       tagList(
         plotlyOutput(outputId = ns("peak_size"), height="100%")

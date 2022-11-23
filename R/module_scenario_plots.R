@@ -495,6 +495,7 @@ scenario_plots_server <- function(id, tab_data=NULL) {
 
       # Get the ensemble checkbox selection
       show_ens <- reactive(input$ensemble_chkbox)
+      show_ens_peak <- reactive(input$ensemble_chkbox_peak)
       ens_chk = reactive(input$ensemble_chkbox_dist)
 
       # get the uncertainty level input
@@ -745,10 +746,12 @@ scenario_plots_server <- function(id, tab_data=NULL) {
           create_peak_size_plotly(
             peak_size_data = peak_size_data,
             scen_sel = ss(),
-            location = lo()
+            location = lo(),
+            rnd = r,
+            ens_chk = show_ens_peak()
           )
         }
-      }) %>% bindCache("peak", ss(), lo(), id)
+      }) %>% bindCache("peak", ss(), lo(), show_ens_peak(), id)
 
       #' ########################################################
       #' MULTIDISEASE PLOTS

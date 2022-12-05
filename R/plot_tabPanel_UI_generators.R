@@ -310,7 +310,13 @@ peak_panel <- function(ns,r, default_ensemble=default_ensemble) {
           plotlyOutput(outputId = ns("peak_plot"), height="100%")
 
         ),
-        type = 8, color = "#211e6b", size = 1)
+        type = 8, color = "#211e6b", size = 1),
+      HTML(
+        "<br><br>",
+        "<div>A probability of 1 in the first week of the projection period ",
+        "could mean either future projections are not expected to exceed a ",
+        "prior peak or projections expect the peak will occur in the first",
+        " week.</div>")
     )
   } else {
     tabPanel(
